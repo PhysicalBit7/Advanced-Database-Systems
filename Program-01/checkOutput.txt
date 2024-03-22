@@ -1,0 +1,122 @@
+BEGINNING PHASE 1
+Initial Hard Drive Data: 35 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 
+Hard Drive Initial Size: 35
+
+----------
+Pass 0
+Starting at index 1 of Hard Drive
+Main Memory read 8 records from Hard Drive: 19 21 42 54 98 72 31 85 
+After sorting main memory: 19 21 31 42 54 72 85 98 
+
+
+Updated Hard Drive Data: 43 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 19 21 31 42 54 72 85 98 
+New Hard Drive size: 43
+Memory reset to size: 0
+Buffer size also reset to: 0
+
+Sublist Beginning Index: 36
+Sublist size: 8
+Sublist data: 19 21 31 42 54 72 85 98 
+
+
+----------
+Pass 1
+Starting at index 9 of Hard Drive
+Main Memory read 8 records from Hard Drive: 43 45 6 58 20 7 14 15 
+After sorting main memory: 6 7 14 15 20 43 45 58 
+
+
+Updated Hard Drive Data: 51 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 19 21 31 42 54 72 85 98 6 7 14 15 20 43 45 58 
+New Hard Drive size: 51
+Memory reset to size: 0
+Buffer size also reset to: 0
+
+Sublist Beginning Index: 44
+Sublist size: 8
+Sublist data: 6 7 14 15 20 43 45 58 
+
+
+----------
+Pass 2
+Starting at index 17 of Hard Drive
+Main Memory read 8 records from Hard Drive: 16 23 26 27 51 3 12 30 
+After sorting main memory: 3 12 16 23 26 27 30 51 
+
+
+Updated Hard Drive Data: 59 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 19 21 31 42 54 72 85 98 6 7 14 15 20 43 45 58 3 12 16 23 26 27 30 51 
+New Hard Drive size: 59
+Memory reset to size: 0
+Buffer size also reset to: 0
+
+Sublist Beginning Index: 52
+Sublist size: 8
+Sublist data: 3 12 16 23 26 27 30 51 
+
+
+----------
+Pass 3
+Starting at index 25 of Hard Drive
+Main Memory read 8 records from Hard Drive: 81 36 77 73 49 33 68 61 
+After sorting main memory: 33 36 49 61 68 73 77 81 
+
+
+Updated Hard Drive Data: 67 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 19 21 31 42 54 72 85 98 6 7 14 15 20 43 45 58 3 12 16 23 26 27 30 51 33 36 49 61 68 73 77 81 
+New Hard Drive size: 67
+Memory reset to size: 0
+Buffer size also reset to: 0
+
+Sublist Beginning Index: 60
+Sublist size: 8
+Sublist data: 33 36 49 61 68 73 77 81 
+
+
+----------
+Pass 4
+Starting at index 33 of Hard Drive
+Main Memory read 3 records from Hard Drive: 5 87 91 
+After sorting main memory: 5 87 91 
+
+
+Updated Hard Drive Data: 70 19 21 42 54 98 72 31 85 43 45 6 58 20 7 14 15 16 23 26 27 51 3 12 30 81 36 77 73 49 33 68 61 5 87 91 19 21 31 42 54 72 85 98 6 7 14 15 20 43 45 58 3 12 16 23 26 27 30 51 33 36 49 61 68 73 77 81 5 87 91 
+New Hard Drive size: 70
+Memory reset to size: 0
+Buffer size also reset to: 0
+
+Sublist Beginning Index: 68
+Sublist size: 3
+Sublist data: 5 87 91 
+
+
+-----
+BEGINNING PHASE 2
+Main Memory Size: 0
+
+-----
+First Round of adding to Main Memory
+Sublist: 0
+Starting Index: 36
+Updated Index: 38
+
+
+Sublist: 1
+Starting Index: 44
+Updated Index: 46
+
+
+Sublist: 2
+Starting Index: 52
+Updated Index: 54
+
+
+Main Memory Size: 6
+19 21 6 7 3 12 
+Smallest: 3
+Comes from block: 2
+Main Memory Size: 7
+19 21 6 7 3 12 3 
+Main Memory Size: 7
+19 21 6 7 3 12 3 
+Smallest: 3
+Comes from block: 2
+Main Memory Size: 8
+19 21 6 7 3 12 3 3 
