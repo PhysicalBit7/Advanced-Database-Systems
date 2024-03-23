@@ -8,6 +8,10 @@ class System {
     private:
         ifstream inputFile;
         int currentMemorySize;
+        int chunksAtCurrentLevel;
+        int currentLevel;
+        vector<Level> levelTracker;
+        
     public:
         // memory
         RecordStruct Mem[MEMSIZE];
@@ -16,13 +20,13 @@ class System {
         // Read records from input file to memory
         void readRecordIntoMemory();
         // Output Memory
-        void outputMemory();
+        void outputMemory(std::ostream& = std::cout);
         // Flush fuction
-        void flushToNextLevel();
+        void flushMemory();
         // Sort Memory
         void insertionSortOnMemory(RecordStruct);
         // Delete if repeated
-        void replaceIfRepeated(RecordStruct);
+        bool checkForDuplicatesAndReplace(RecordStruct);
 
         // Constructor
         System(string);
@@ -32,6 +36,11 @@ class System {
 
 System::System(string file) {
     currentMemorySize = 0;
+    currentLevel = 1;
+    chunksAtCurrentLevel = 0;
+    Level level = {currentLevel, chunksAtCurrentLevel};
+    levelTracker.push_back(level);
+
     file = "../Data/" + file;
     inputFile = ifstream(file);
     cout << "Opening file: " << file << endl;
@@ -63,7 +72,8 @@ void System::readRecordIntoMemory() {
         std::cerr << "Memory is full" << endl;
         if(!inputFile.eof()){
             std::cerr << "Memory is full but there are still records to read" << endl;
-            //TODO: at this point I beleive we need to sort and flush the memory to the next level
+            //TODO: at this point I beleive we need to flush the memory to the next level
+            flushMemory();
         }
     }else{
         int keyFromFile;
@@ -75,34 +85,59 @@ void System::readRecordIntoMemory() {
     }
 }
 
-void System::outputMemory() {
+void System::outputMemory(std::ofstream& output) {
+    output << " ---------- Outputting Memory: Size = " << currentMemorySize << " ----------" << endl;
     for (int i = 0; i < currentMemorySize; i++) {
-        cout << "Record: " << i << " Key:" << Mem[i].key << " Value:" << Mem[i].value << endl;
+        output << "Record: " << i << " Key:" << Mem[i].key << " Value:" << Mem[i].value << endl;
     }
-    currentMemorySize = 0;
+    //currentMemorySize = 0;
 }
 
-void System::flushToNextLevel(){
-
+void System::flushMemory(){
+    if(chunksAtCurrentLevel == THRESHOLD){
+        // TODO: Merge sort all chunks to the next level down
+        chunksAtCurrentLevel = 0;
+        Level newLevel = {currentLevel++, chunksAtCurrentLevel};
+    }else{
+        levelTracker[currentLevel].numberOfChunks++;
+    }
+    // Create appropriate file name under the level
+    std::ostringstream filenameStream;
+    filenameStream << "L" << currentLevel << "-" << chunksAtCurrentLevel <<".txt";
 }
 
 void System::insertionSortOnMemory(RecordStruct record){
-    int j = currentMemorySize - 1;
-    while (j >= 0 && Mem[j].key > record.key) {
-        if(record.key == Mem[j].key){
-            replaceIfRepeated(record);
+    if(currentMemorySize == 0){
+        //cout << "Inserting first record: " << record.key << " with value: " << record.value << endl;
+        Mem[0] = record;
+        currentMemorySize++;
+    }else{
+        //cout << "Inserting: " << record.key << " with value: " << record.value << endl;
+        int j = currentMemorySize - 1;
+        if(checkForDuplicatesAndReplace(record)){
             return;
         }
-        Mem[j + 1] = Mem[j];
-        j--;
+        while (j >= 0 && Mem[j].key > record.key) {
+            Mem[j + 1] = Mem[j];
+            j--;
+        }
+        Mem[j + 1] = record;
+        currentMemorySize++;
     }
-    Mem[j + 1] = record;
-    currentMemorySize++;
 }
 
-void System::replaceIfRepeated(RecordStruct record){
-
+bool System::checkForDuplicatesAndReplace(RecordStruct record){
+    for(int i = 0; i < currentMemorySize; i++){
+        if(Mem[i].key == record.key){
+            //cout << "------- Duplicate detected: " << Mem[i].key << " replacing value" << endl;
+            Mem[i].value = record.value;
+            return true;
+        }
+    }
+    return false;
 }
+
+
 
 
 

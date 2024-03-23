@@ -11,8 +11,10 @@ int main()
     System system("prog02Data.txt");
 
     // Practice reading in a line and creating a record
-    system.readRecordIntoMemory();
-    system.readRecordIntoMemory();
+    for(int i = 0; i < 22; i++)
+    {
+        system.readRecordIntoMemory();
+    }
     system.outputMemory();
     /*
     while(!)

@@ -40,7 +40,9 @@ struct RecordStruct {
     // int status;     // 0: for normal, 1 for delete tombstone
 };
 
-
-
+struct Level{
+    int level;
+    int numberOfChunks;
+};
 
 #endif
