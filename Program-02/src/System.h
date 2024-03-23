@@ -7,7 +7,7 @@ class System {
     // some functions might be useful such as read records to memory:
     private:
         ifstream inputFile;
-        int memoryLocation;
+        int currentMemorySize;
     public:
         // memory
         RecordStruct Mem[MEMSIZE];
@@ -17,6 +17,12 @@ class System {
         void readRecordIntoMemory();
         // Output Memory
         void outputMemory();
+        // Flush fuction
+        void flushToNextLevel();
+        // Sort Memory
+        void insertionSortOnMemory(RecordStruct);
+        // Delete if repeated
+        void replaceIfRepeated(RecordStruct);
 
         // Constructor
         System(string);
@@ -25,7 +31,7 @@ class System {
 };
 
 System::System(string file) {
-    memoryLocation = 0;
+    currentMemorySize = 0;
     file = "../Data/" + file;
     inputFile = ifstream(file);
     cout << "Opening file: " << file << endl;
@@ -52,18 +58,52 @@ RecordStruct System::createARecord(int key, int value) {
 
 void System::readRecordIntoMemory() {
     //First we need to read in a line from the file
-    int keyFromFile;
-    int valueFromFile;
-    inputFile >> keyFromFile >> valueFromFile;
-    RecordStruct record = createARecord(keyFromFile, valueFromFile);
-    Mem[memoryLocation++] = record;
+    //If memory is full we need to check if there are still records to read, sort, and flush
+    if(currentMemorySize >= MEMSIZE) {
+        std::cerr << "Memory is full" << endl;
+        if(!inputFile.eof()){
+            std::cerr << "Memory is full but there are still records to read" << endl;
+            //TODO: at this point I beleive we need to sort and flush the memory to the next level
+        }
+    }else{
+        int keyFromFile;
+        int valueFromFile;
+        inputFile >> keyFromFile >> valueFromFile;
+        RecordStruct record = createARecord(keyFromFile, valueFromFile);
+        // input record and call insertion sort
+        insertionSortOnMemory(record);   
+    }
 }
 
 void System::outputMemory() {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < currentMemorySize; i++) {
         cout << "Record: " << i << " Key:" << Mem[i].key << " Value:" << Mem[i].value << endl;
     }
+    currentMemorySize = 0;
 }
+
+void System::flushToNextLevel(){
+
+}
+
+void System::insertionSortOnMemory(RecordStruct record){
+    int j = currentMemorySize - 1;
+    while (j >= 0 && Mem[j].key > record.key) {
+        if(record.key == Mem[j].key){
+            replaceIfRepeated(record);
+            return;
+        }
+        Mem[j + 1] = Mem[j];
+        j--;
+    }
+    Mem[j + 1] = record;
+    currentMemorySize++;
+}
+
+void System::replaceIfRepeated(RecordStruct record){
+
+}
+
 
 
 #endif
