@@ -3,13 +3,19 @@
 
 int main()
 {
-    /*
+    
     // some variables to keep track of status could be useful
     //     for example, the current number of chunk at every level
+    
+    // Create an opening to the input file
+    System system("prog02Data.txt");
 
-
-    // read data from input file until end of file
-    while not end of input file
+    // Practice reading in a line and creating a record
+    system.readRecordIntoMemory();
+    system.readRecordIntoMemory();
+    system.outputMemory();
+    /*
+    while(!)
     {
         //1. add to memory in a sorted order
         //      if repeated, replace the old one. 
@@ -26,6 +32,6 @@ int main()
     // flush all the data in Mem to L0.txt file
 
     // keep all the information of the number of chunks at each level in a single file
-
     */
+
 }

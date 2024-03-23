@@ -5,9 +5,9 @@ This project simulates a Tiered LSM-tree. To simplify the assignment, no deletio
 ## System Setup
 
 - _Complete_ - **BLOCKSIZE**: A constant used as the number of records that can be held in a block. (e.g., 2)
+- _Complete_ - **THRESHOLD**: A constant used as the size ratio between levels. (e.g., 4)
+- _Complete_ - - **Mem[MEMSIZE]**: An array of MEMSIZE records store data at level 0. MEMSIZE is a constant number for total records (integers) can be held in Mem[]. This constant MEMSIZE should be a number greater than or equal to (THRESHOLD+1)* BLOCKSIZE.
 ---
-- **THRESHOLD**: A constant used as the size ratio between levels. (e.g., 4)
-- **Mem[MEMSIZE]**: An array of MEMSIZE records store data at level 0. MEMSIZE is a constant number for total records (integers) can be held in Mem[]. This constant MEMSIZE should be a number greater than or equal to (THRESHOLD+1)* BLOCKSIZE.
 - Each layer of LSM has up to THRESHOLD files. The file name for tier t of layer i should be in the format: Li-t.txt. For example, L1-0.txt is the tier (chunk) 0 of data at level 1.
 - Between records in a file, there is a newline (‘\n’).
 - An array (or vector) to keep track of the number of chunks at each level.
