@@ -1,21 +1,6 @@
 #include "Master.h"
 #include "System.h" 
 
-/*
-//system:
-const int BLOCKSIZE = 2;        //records per block
-const int THRESHOLD = 4;        //size ratio between levels
-const int MEMSIZE = (THRESHOLD+1) * BLOCKSIZE;      //10      //number of records in memory
-
-struct RecStruct{
-    int key;
-    int value; 
-    // int status;     // 0: for normal, 1 for delete tombstone
-};
-
-    RecStruct Mem[MEMSIZE];     // memory
-*/
-
 int main()
 {
     /*
