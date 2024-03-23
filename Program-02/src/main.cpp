@@ -8,10 +8,10 @@ int main()
     //     for example, the current number of chunk at every level
     
     // Create an opening to the input file
-    System system("prog02Data.txt");
+    System system("startingData.txt");
 
     // Practice reading in a line and creating a record
-    for(int i = 0; i < 22; i++)
+    for(int i = 0; i < 62; i++)
     {
         system.readRecordIntoMemory();
     }

@@ -1,0 +1,10 @@
+ Key:21013 Value:64105
+ Key:21114 Value:10777
+ Key:22124 Value:60563
+ Key:23613 Value:13923
+ Key:24820 Value:14394
+ Key:24830 Value:14458
+ Key:25613 Value:12113
+ Key:25830 Value:12181
+ Key:26523 Value:62619
+ Key:26543 Value:13899

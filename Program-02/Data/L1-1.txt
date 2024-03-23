@@ -1,0 +1,10 @@
+ Key:15731 Value:12752
+ Key:23123 Value:14249
+ Key:24723 Value:11868
+ Key:25012 Value:11808
+ Key:25022 Value:11809
+ Key:25032 Value:11810
+ Key:25723 Value:13893
+ Key:26213 Value:13894
+ Key:26613 Value:13898
+ Key:26890 Value:14652
