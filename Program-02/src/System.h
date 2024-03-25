@@ -113,7 +113,6 @@ void System::outputMemory(std::ostream &output)
     {
         output << Mem[i].key << "  " << Mem[i].value << endl;
     }
-    // currentMemorySize = 0;
 }
 
 void System::flushMemory(){
@@ -230,21 +229,33 @@ void System::mergeSort(int currentLevel, ofstream & outputFile, int numberOfChun
         }
     }
 
-    while(!files[0]->eof() && !files[1]->eof() && !files[2]->eof() && !files[3]->eof()){
+    int flag = 0;
+    while(currentMemorySize < MEMSIZE - BLOCKSIZE && flag != numberOfChunks){
         int fileNum = 0;
-        while(currentMemorySize < MEMSIZE - BLOCKSIZE){
-            for(int i = 0; i < BLOCKSIZE; i++){
+        for(int i = 0; i < BLOCKSIZE; i++){
+            string checkForEOF;
+            std::getline(*files[fileNum], checkForEOF);
+            std::istringstream iss(checkForEOF);
+            if(!checkForEOF.empty()){
                 int keyFromFile;
                 int valueFromFile;
-                *files[fileNum] >> keyFromFile >> valueFromFile;
+                iss >> keyFromFile >> valueFromFile;
+                cout << "Adding Key: " << keyFromFile << " Value: " << valueFromFile << " from file: " << fileNum << endl;
                 RecordStruct record = createARecord(keyFromFile, valueFromFile);
                 Mem[currentMemorySize++] = record;
+            }else{
+                flag++;
+                fileNum++;
             }
-            fileNum++;
         }
-        cout << "______________Memory is full_______________" << endl;
-        outputMemory();
-        currentMemorySize = 0;
+        fileNum++;
+        //cout << "______________Memory is full_______________" << endl;
+        // TODO: need to check if memory is full. Reset filenum back to 0
+        // if(currentMemorySize == 8){
+        //     outputMemory(outputFile);
+        //     fileNum = 0;
+        //     currentMemorySize = 0;
+        // }
     }
 }
 
