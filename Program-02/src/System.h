@@ -7,7 +7,7 @@ class System
 {
     // some functions might be useful such as read records to memory:
 private:
-    ifstream inputFile;
+    ifstream startingDataFile;
     int currentMemorySize;
     //int chunks at numberOfLevels;
     int numberOfLevels;
@@ -29,13 +29,11 @@ public:
     // Flush memory to Level 1
     void flushMemory();
     // Merge to next level with no merging to test
-    void mergeToNextLevelNoMerging(int);
-    // Merge to next level with merging
-    void mergeToNextLevelWithMerging(int);
+    void mergeToNextLevel(int, int);
     // Choose the smallest in memory
     void chooseSmallestInMem();
     // Fill memory
-    void mergeSort(int, ofstream &);
+    void mergeSort(int, ofstream &, int);
     // Read in at specific memory location
     void readInAtSpecificMemory(int);
     // Sort Memory
@@ -59,11 +57,11 @@ System::System(string file)
     levelTracker.push_back(level);
 
     file = "../Data/" + file;
-    inputFile = ifstream(file);
+    startingDataFile = ifstream(file);
     cout << "Opening file: " << file << endl;
 
     // Check if the file was opened successfully
-    if (!inputFile)
+    if (!startingDataFile)
     {
         std::cerr << "Unable to open file";
         exit(1); // terminate with error
@@ -74,7 +72,7 @@ System::System(string file)
 System::~System()
 {
     cout << "Closing file" << endl;
-    inputFile.close();
+    startingDataFile.close();
 }
 
 RecordStruct System::createARecord(int key, int value)
@@ -92,7 +90,7 @@ void System::readRecordIntoMemory()
     if (currentMemorySize == MEMSIZE)
     {
         // std::cerr << "Memory is full" << endl;
-        if (!inputFile.eof())
+        if (!startingDataFile.eof())
         {
             // std::cerr << "Memory is full but there are still records to read" << endl;
             // TODO: at this point I beleive we need to flush the memory to the next level
@@ -102,7 +100,7 @@ void System::readRecordIntoMemory()
     // Still need to add the current record into memory
     int keyFromFile;
     int valueFromFile;
-    inputFile >> keyFromFile >> valueFromFile;
+    startingDataFile >> keyFromFile >> valueFromFile;
     RecordStruct record = createARecord(keyFromFile, valueFromFile);
     // input record and call insertion sort
     insertionSortOnMemory(record);
@@ -139,9 +137,9 @@ void System::flushMemory(){
     currentMemorySize = 0;
 
     if(chunksAtLevel == THRESHOLD){
+        mergeToNextLevel(level1Flush, levelTracker[level1Flush].numberOfChunks);
         levelTracker[level1Flush].numberOfChunks = 0;
-        //TODO: swap to merge to next level with merging
-        mergeToNextLevelNoMerging(level1Flush); 
+        //TODO: swap to merge to next level with merging 
     }
 
 }
@@ -187,11 +185,11 @@ bool System::checkForDuplicatesAndReplace(RecordStruct record)
 }
 
 
-void System::mergeToNextLevelNoMerging(int currentLevel){
+void System::mergeToNextLevel(int currentLevel, int numberOfChunks){
     // To account for us starting at 0
     currentLevel++;
 
-    cout << "Merging to next level" << endl;
+    cout << "Merging to next level. Currently at " << currentLevel << endl;
 
     //if there does not exist a level above this create it
     if(levelTracker.size() < currentLevel + 1){
@@ -207,46 +205,46 @@ void System::mergeToNextLevelNoMerging(int currentLevel){
     filenameStream << "L" << levelTracker[currentLevel].level + 1 << "-" << levelTracker[currentLevel].numberOfChunks << ".txt";
     string filename = filenameStream.str();
     ofstream outputFile("../Data/" + filename);
-    //outputFile.close();
-    
-    //Fill in memory until files end
-    mergeSort(currentLevel, outputFile);
 
-
+    // Merge sort the records
+    mergeSort(currentLevel, outputFile, numberOfChunks);
+    // Close the file
+    outputFile.close();
+    // TODO: Need to make this recursive in order to cascade down the current levels to make sure they dont also need to merge
 }
 
 void System::readInAtSpecificMemory(int starting){
 
 }
 
-void System::mergeSort(int currentLevel, ofstream &outputFile){
-    int flag = 0;
-    int fileNum = 0;
-    //cout << "Memory Size Before: " << currentMemorySize << endl;
-    //cout << MEMSIZE - BLOCKSIZE << endl;
-    while(flag != THRESHOLD){
+void System::mergeSort(int currentLevel, ofstream & outputFile, int numberOfChunks){
+    std::ifstream* files[numberOfChunks];
+    for(int i = 0; i < 4; i++){
+        std::ostringstream filenameStream;
+        filenameStream << "L" << currentLevel << "-" << i << ".txt";
+        string filename = filenameStream.str();
+        files[i] = new std::ifstream("../Data/" + filename);
+        if (!*files[i]) {
+            std::cerr << "Unable to open file " << filename;
+            exit(1); // terminate with error
+        }
+    }
+
+    while(!files[0]->eof() && !files[1]->eof() && !files[2]->eof() && !files[3]->eof()){
+        int fileNum = 0;
         while(currentMemorySize < MEMSIZE - BLOCKSIZE){
-            string file = "../Data/L" + std::to_string(currentLevel) + "-" + std::to_string(fileNum) + ".txt";
-            inputFile = ifstream(file);
-            //cout << "Opening file: " << file << endl;
-            for(int i = 0 ; i < BLOCKSIZE; i++){
-                // Open appropriate file
+            for(int i = 0; i < BLOCKSIZE; i++){
                 int keyFromFile;
                 int valueFromFile;
-                inputFile >> keyFromFile >> valueFromFile;
+                *files[fileNum] >> keyFromFile >> valueFromFile;
                 RecordStruct record = createARecord(keyFromFile, valueFromFile);
-                cout << "Inserting: " << record.key << " with value: " << record.value << " from " << file << endl;
                 Mem[currentMemorySize++] = record;
             }
             fileNum++;
-            if(inputFile.eof()){
-                flag++;
-            }
         }
-        outputMemory(outputFile);
+        cout << "______________Memory is full_______________" << endl;
+        outputMemory();
         currentMemorySize = 0;
-        fileNum = 0;
-        //cout << "Memory Size: " << currentMemorySize << endl;
     }
 }
 

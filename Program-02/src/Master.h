@@ -28,6 +28,7 @@ using std::ceil;
 using std::sort;
 using std::vector;
 using std::numeric_limits;
+using std::to_string;
 
 
 const int BLOCKSIZE = 2;                            // records per block
@@ -44,5 +45,7 @@ struct Level{
     int level;
     int numberOfChunks;
 };
+
+
 
 #endif

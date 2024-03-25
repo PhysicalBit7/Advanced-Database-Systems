@@ -15,7 +15,7 @@ int main()
     {
         system.readRecordIntoMemory();
     }
-    system.outputMemory();
+    //system.outputMemory();
     /*
     while(!)
     {
