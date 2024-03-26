@@ -3,48 +3,100 @@
 
 #include "Master.h"
 
-class System
-{
-    // some functions might be useful such as read records to memory:
+#include <fstream>
+#include <vector>
+#include <iostream>
+
+
+
+class System {
 private:
-    ifstream startingDataFile;
-    int currentMemorySize;
-    //int chunks at numberOfLevels;
-    int numberOfLevels;
-    // Current Level
-    int level1Flush;
-    // Number of Chunks
-    int chunksAtLevel;
-    vector<Level> levelTracker;
+    ifstream startingDataFile;  // Input file stream for starting data
+    int currentMemorySize;  // Current size of memory
+    int numberOfLevels;  // Number of levels in the system
+    int level1Flush;  // Current level 1 flush status
+    int chunksAtLevel;  // Number of chunks at each level
+    vector<Level> levelTracker;  // Vector to track levels
 
 public:
-    // memory
+    // Memory size
     RecordStruct Mem[MEMSIZE];
-    // Create a record from the input file
-    RecordStruct createARecord(int, int);
-    // Read records from input file to memory
-    void readRecordIntoMemory();
-    // Output Memory
-    void outputMemory(std::ostream & = std::cout);
-    // Flush memory to Level 1
-    void flushMemory();
-    // Merge to next level with no merging to test
-    void mergeToNextLevel(int, int);
-    // Choose the smallest in memory
-    void chooseSmallestInMem();
-    // Fill memory
-    void mergeSort(int, ofstream &, int);
-    // Read in at specific memory location
-    void readInAtSpecificMemory(int);
-    // Sort Memory
-    void insertionSortOnMemory(RecordStruct);
-    // Delete if repeated
-    bool checkForDuplicatesAndReplace(RecordStruct);
 
     // Constructor
-    System(string);
+    System(string filePath);
+
     // Destructor
     ~System();
+
+    /**
+     * Creates a record from the input file.
+     *
+     * @param property1 The value of property 1.
+     * @param property2 The value of property 2.
+     * @return The created record.
+     */
+    RecordStruct createARecord(int property1, int property2);
+
+    /**
+     * Reads records from the input file into memory.
+     */
+    void readRecordIntoMemory();
+
+    /**
+     * Outputs the contents of the memory.
+     *
+     * @param os The output stream to write the memory contents to. Default is std::cout.
+     */
+    void outputMemory(std::ostream& os = std::cout);
+
+    /**
+     * Flushes the memory to Level 1.
+     */
+    void flushMemory();
+
+    /**
+     * Merges the memory to the next level without any merging to test.
+     *
+     * @param level The level to merge.
+     * @param chunks The number of chunks to merge.
+     */
+    void mergeToNextLevel(int level, int chunks);
+
+    /**
+     * Chooses the smallest record in memory.
+     */
+    void chooseSmallestInMem();
+
+    /**
+     * Fills the memory using merge sort.
+     *
+     * @param level The level to fill.
+     * @param outputFile The output file stream to write the sorted records to.
+     * @param chunks The number of chunks to merge.
+     */
+    void mergeSort(int level, ofstream& outputFile, int chunks);
+
+    /**
+     * Reads records into a specific memory location.
+     *
+     * @param location The memory location to read into.
+     */
+    void readInAtSpecificMemory(int location);
+
+    /**
+     * Sorts the memory using insertion sort.
+     *
+     * @param record The record to insert into memory.
+     */
+    void insertionSortOnMemory(RecordStruct record);
+
+    /**
+     * Checks for duplicates in memory and replaces them.
+     *
+     * @param record The record to check for duplicates.
+     * @return True if a duplicate was found and replaced, false otherwise.
+     */
+    bool checkForDuplicatesAndReplace(RecordStruct record);
 };
 
 System::System(string file)
@@ -202,6 +254,7 @@ void System::mergeToNextLevel(int currentLevel, int numberOfChunks){
     // Create appropriate file name under the level
     std::ostringstream filenameStream;
     filenameStream << "L" << levelTracker[currentLevel].level + 1 << "-" << levelTracker[currentLevel].numberOfChunks << ".txt";
+    cout << currentLevel << endl;
     string filename = filenameStream.str();
     ofstream outputFile("../Data/" + filename);
 
@@ -216,11 +269,11 @@ void System::readInAtSpecificMemory(int starting){
 
 }
 
-void System::mergeSort(int currentLevel, ofstream & outputFile, int numberOfChunks){
+void System::mergeSort(int numberOfLevels, ofstream & outputFile, int numberOfChunks){
     std::ifstream* files[numberOfChunks];
     for(int i = 0; i < 4; i++){
         std::ostringstream filenameStream;
-        filenameStream << "L" << currentLevel << "-" << i << ".txt";
+        filenameStream << "L" << numberOfLevels << "-" << i << ".txt";
         string filename = filenameStream.str();
         files[i] = new std::ifstream("../Data/" + filename);
         if (!*files[i]) {
@@ -229,9 +282,9 @@ void System::mergeSort(int currentLevel, ofstream & outputFile, int numberOfChun
         }
     }
 
+    int fileNum = 0;
     int flag = 0;
-    while(currentMemorySize < MEMSIZE - BLOCKSIZE && flag != numberOfChunks){
-        int fileNum = 0;
+    while(flag != THRESHOLD){
         for(int i = 0; i < BLOCKSIZE; i++){
             string checkForEOF;
             std::getline(*files[fileNum], checkForEOF);
@@ -240,22 +293,25 @@ void System::mergeSort(int currentLevel, ofstream & outputFile, int numberOfChun
                 int keyFromFile;
                 int valueFromFile;
                 iss >> keyFromFile >> valueFromFile;
-                cout << "Adding Key: " << keyFromFile << " Value: " << valueFromFile << " from file: " << fileNum << endl;
+                //cout << "Adding Key: " << keyFromFile << " Value: " << valueFromFile << " from file: " << fileNum << endl;
                 RecordStruct record = createARecord(keyFromFile, valueFromFile);
                 Mem[currentMemorySize++] = record;
             }else{
                 flag++;
                 fileNum++;
+                if(flag == THRESHOLD){
+                    break;
+                }
             }
         }
         fileNum++;
-        //cout << "______________Memory is full_______________" << endl;
         // TODO: need to check if memory is full. Reset filenum back to 0
-        // if(currentMemorySize == 8){
-        //     outputMemory(outputFile);
-        //     fileNum = 0;
-        //     currentMemorySize = 0;
-        // }
+        if(currentMemorySize == MEMSIZE - BLOCKSIZE){
+            //cout << "______________Memory is full_______________ : " << currentMemorySize << endl;
+            outputMemory(outputFile);
+            fileNum = 0;
+            currentMemorySize = 0;
+        }
     }
 }
 
